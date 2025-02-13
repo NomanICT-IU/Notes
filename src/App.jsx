@@ -2,7 +2,7 @@ import { useState } from "react";
 import "./App.css";
 
 const App = () => {
-  const [notesTitle, setNotesTitle] = useState("");
+  const [noteTitle, setNoteTitle] = useState("");
   const [notes, setNotes] = useState([
     {
       id: 1,
@@ -13,53 +13,52 @@ const App = () => {
       title: "Notes 2",
     },
   ]);
-  const [status, setStatus] = useState(false);
+  const [edit, setEdit] = useState("");
+  const changeHandler = (e) => {
+    setNoteTitle(e.target.value);
+  };
 
-  const [editNotes, setEditNotes] = useState({});
-  /**submit handler start here */
   const submitHandler = (e) => {
     e.preventDefault();
-    if (notesTitle.trim() === "") {
-      alert("Please fill in the input");
+    if (noteTitle.trim() === "") {
+      alert("Please fill in the filed");
       return;
     }
+    !edit ? createNotes() : updateNotes();
+  };
 
-
-    const newNotes = [...notes, { id: Date.now(), title: notesTitle }];
+  const createNotes = () => {
+    let newNotes = [...notes, { id: Date.now(), title: noteTitle }];
     setNotes(newNotes);
-    setNotesTitle("");
+    setNoteTitle("");
   };
-  /**submit handler end here */
 
-  /**change handler start here */
-  const changeHandler = (e) => {
-    setNotesTitle(e.target.value);
+  const updateNotes = () => {
+    let updatedNotes = notes.map((item) =>
+      item.id === edit ? { ...item, title: noteTitle } : item
+    );
+    setNotes(updatedNotes);
+    setEdit("");
+    setNoteTitle("");
   };
-  // console.log(notesTitle);
-  /**change handler end here */
-
-  /**delete handler start here */
   const deleteHandler = (noteId) => {
-    let reduceNotes = notes.filter((item) => item.id !== noteId);
-    setNotes(reduceNotes);
+    let updateNotes = notes.filter((item) => item.id !== noteId);
+    setNotes(updateNotes);
   };
-  /**delete handler end  here */
 
-  /**update handler start here */
   const editHandler = (note) => {
-    setEditNotes(note);
-
+    setEdit(note.id);
+    setNoteTitle(note.title);
+    
   };
 
-  console.log(editNotes);
-  /**update handler end here */
+ // const {submitHandler,noteTitle,changeHandler,edit,notes,editHandler,deleteHandler}
   return (
     <>
       <form onSubmit={submitHandler}>
-        <input type="text" value={notesTitle || editNotes.title } onChange={changeHandler} />
-        <button type="submit">{status ? "Update Notes" : "Add Notes"}</button>
+        <input type="text" value={noteTitle} onChange={changeHandler} />
+        <button type="submit">{edit ? "Update Notes" : "Add Notes"}</button>
       </form>
-
       <h1>All Notes</h1>
       <ul>
         {notes.map((note) => (
